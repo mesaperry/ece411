@@ -231,7 +231,7 @@ If all downloaded files are placed in the same directory, the default selection 
 The license for Quartus Standard is not ready yet, which means activation will fail. However, in the first MP, you 
 will not need Quartus. Instead, you can launch ModelSim directly and run the autograder script. We will inform you on Piazza
 once the license is ready. At that time, you can activate Quartus by accessing the License Setup Page at **Tools → License Setup** 
-and do the following steps. <https://piazza.com/class/ky3trrd5ky724a?cid=7>`_
+and do the following steps. <https://piazza.com/class/ky3trrd5ky724a?cid=8>`_
 
 Note that to run the Standard Edition of Quartus Prime, you need access to the University's license, and you must
 be connected to the University's VPN. If you do not have UIUC's VPN client, it can be downloaded
