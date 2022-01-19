@@ -377,7 +377,7 @@ Putting this all together, we can write our testbench to verify ``module purefun
       initial begin
           reset = '1;
           // Generate sequence of inputs
-          for (int i = 0; i <= 4'b1000; ++i) begin
+          for (int i = 0; i < 4'b1000; ++i) begin
               // Set input values to the dut, and let combinational logic settle
               {a_i, b_i, c_i} = i[2:0];
               #1;
