@@ -337,7 +337,7 @@ Listing 4: Checking Outputs [#]_
   :number-lines:
 
   initial begin
-      for (int i = 0; i <= 4'b1000; ++i) begin
+      for (int i = 0; i < 4'b1000; ++i) begin
           {a_i, b_i, c_i} = i[2:0];
           #1;
           output_equiv: assert (x_o == spec_output(a_i, b_i, c_i))
