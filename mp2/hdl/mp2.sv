@@ -29,10 +29,30 @@ cmpmux::cmpmux_sel_t cmpmux_sel;
 
 /* Instantiate MP 1 top level blocks here */
 
+datapath_pack dpath_conn;
+control_pack ctrl_conn;
+
 // Keep control named `control` for RVFI Monitor
-control control(.*);
+control control(
+	.clk(clk),
+	.rst(rst),
+	.mem_resp(mem_resp),
+	.mem_read(mem_read),
+	.mem_write(mem_write),
+	.mem_byte_enable(mem_byte_enable),
+	.dpath_in(dpath_conn),
+	.ctrl_out(ctrl_conn)
+);
 
 // Keep datapath named `datapath` for RVFI Monitor
-datapath datapath(.*);
+datapath datapath(
+	.clk(clk),
+	.rst(rst),
+	.mem_rdata(mem_rdata),
+	.mem_wdata(mem_wdata),
+	.mem_address(mem_address),
+	.ctrl_in(ctrl_conn),
+	.dpath_out(dpath_conn)
+);
 
 endmodule : mp2
