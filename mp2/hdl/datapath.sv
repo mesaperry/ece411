@@ -16,12 +16,27 @@ module datapath (
 );
 
 /******************* Signals Needed for RVFI Monitor *************************/
-//rv32i_word pcmux_out;
-//rv32i_word mdr_out;
-
 rv32i_pack conn;
 assign conn.ctrl = ctrl_in;
 assign dpath_out = conn.dpath;
+
+logic load_pc;
+rv32i_word pcmux_out;
+rv32i_word mdrreg_out;
+rv32i_word pc_out;
+rv32i_word rs1_out;
+rv32i_word rs2_out;
+rv32i_reg rd;
+rv32i_word regfilemux_out;
+
+assign load_pc = conn.ctrl.load_pc;
+assign pcmux_out = conn.dpath.pcmux_out;
+assign mdrreg_out = conn.dpath.mdr_out;
+assign pc_out = conn.dpath.pc_out;
+assign rs1_out = conn.dpath.rs1_out;
+assign rs2_out = conn.dpath.rs2_out;
+assign rd = conn.dpath.rd;
+assign regfilemux_out = conn.dpath.regfilemux_out;
 
 assign mem_address = {conn.dpath.mem_address[31:2], 2'd0};
 /*****************************************************************************/

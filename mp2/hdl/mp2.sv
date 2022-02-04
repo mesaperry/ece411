@@ -1,4 +1,5 @@
 import rv32i_types::*;
+import connections::*;
 
 module mp2
 (

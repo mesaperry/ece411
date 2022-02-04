@@ -28,8 +28,8 @@ typedef struct packed {
 	rv32i_types::rv32i_reg rs1;
 	rv32i_types::rv32i_reg rs2;
 	rv32i_types::rv32i_reg rd;
-	rv32i_types::rv32i_reg rs1_out;
-	rv32i_types::rv32i_reg rs2_out;
+	rv32i_types::rv32i_word rs1_out;
+	rv32i_types::rv32i_word rs2_out;
 	rv32i_types::rv32i_word i_imm;
 	rv32i_types::rv32i_word u_imm;
 	rv32i_types::rv32i_word b_imm;
