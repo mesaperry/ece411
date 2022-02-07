@@ -86,7 +86,10 @@ enum int unsigned {
 	st1           = 10,
 	st2           = 11,
 	auipc         = 12,
-	br            = 13
+	br            = 13,
+	reg_op        = 14,
+	jal           = 15,
+	jalr          = 16
 } state, next_state;
 
 /************************* Function Definitions *******************************/
@@ -285,6 +288,55 @@ begin : state_actions
 			ctrl_out.aluop = rv32i_types::alu_add;
 			ctrl_out.cmpop = rv32i_types::branch_funct3_t ' (dpath_in.funct3);
       end
+      reg_op: begin
+			ctrl_out.load_regfile = 1'b1;
+			ctrl_out.load_pc = 1'b1;
+			ctrl_out.aluop = rv32i_types::alu_ops ' (dpath_in.funct3);
+			ctrl_out.alumux2_sel = alumux::rs2_out;
+			ctrl_out.regfilemux_sel = regfilemux::alu_out;
+			if ((dpath_in.funct3 == rv32i_types::add) && (dpath_in.funct7 == 7'b0000000))
+				ctrl_out.aluop = rv32i_types::alu_add;
+			else if ((dpath_in.funct3 == rv32i_types::add) && (dpath_in.funct7 == 7'b0100000))
+				ctrl_out.aluop = rv32i_types::alu_sub;
+			else if ((dpath_in.funct3 == rv32i_types::sll))
+				ctrl_out.aluop = rv32i_types::alu_sll;
+			else if ((dpath_in.funct3 == rv32i_types::slt)) begin
+				ctrl_out.cmpop = rv32i_types::blt;
+				ctrl_out.cmpmux_sel = cmpmux::rs2_out;
+				ctrl_out.regfilemux_sel = regfilemux::br_en;
+			end
+			else if ((dpath_in.funct3 == rv32i_types::sltu)) begin
+				ctrl_out.cmpop = rv32i_types::bltu;
+				ctrl_out.cmpmux_sel = cmpmux::rs2_out;
+				ctrl_out.regfilemux_sel = regfilemux::br_en;
+			end
+			else if ((dpath_in.funct3 == rv32i_types::axor))
+				ctrl_out.aluop = rv32i_types::alu_xor;
+			else if ((dpath_in.funct3 == rv32i_types::sr) && (dpath_in.funct7 == 7'b0000000))
+				ctrl_out.aluop = rv32i_types::alu_srl;
+			else if ((dpath_in.funct3 == rv32i_types::sr) && (dpath_in.funct7 == 7'b0100000))
+				ctrl_out.aluop = rv32i_types::alu_sra;
+			else
+				ctrl_out.aluop = rv32i_types::alu_ops ' (dpath_in.funct3);
+      end
+      jal: begin
+			ctrl_out.load_regfile = 1'b1;
+			ctrl_out.load_pc = 1'b1;
+			ctrl_out.regfilemux_sel = regfilemux::pc_plus4;
+			ctrl_out.aluop = rv32i_types::alu_add;
+			ctrl_out.alumux1_sel = alumux::pc_out;
+			ctrl_out.alumux2_sel = alumux::j_imm;
+			ctrl_out.pcmux_sel = pcmux::alu_mod2;
+      end
+      jalr: begin
+			ctrl_out.load_regfile = 1'b1;
+			ctrl_out.load_pc = 1'b1;
+			ctrl_out.regfilemux_sel = regfilemux::pc_plus4;
+			ctrl_out.aluop = rv32i_types::alu_add;
+			ctrl_out.alumux1_sel = alumux::rs1_out;
+			ctrl_out.alumux2_sel = alumux::i_imm;
+			ctrl_out.pcmux_sel = pcmux::alu_mod2;
+      end
 	endcase
 end
 
@@ -310,6 +362,9 @@ begin : next_state_logic
 					rv32i_types::op_store: next_state <= calc_addr_st;
 					rv32i_types::op_auipc: next_state <= auipc;
 					rv32i_types::op_br: next_state <= br;
+					rv32i_types::op_reg: next_state <= reg_op;
+					rv32i_types::op_jal: next_state <= jal;
+					rv32i_types::op_jalr: next_state <= jalr;
 					default: next_state <= fetch1;
 				endcase
 			calc_addr_ld:
