@@ -282,7 +282,7 @@ begin : state_actions
       end
 		br: begin
 			ctrl_out.load_pc = 1'b1;
-			ctrl_out.pcmux_sel = pcmux::pcmux_sel_t ' (dpath_in.br_en);
+			ctrl_out.pcmux_sel = dpath_in.br_en ? alu_out : pc_plus4;
 			ctrl_out.alumux1_sel = alumux::pc_out;
 			ctrl_out.alumux2_sel = alumux::b_imm;
 			ctrl_out.aluop = rv32i_types::alu_add;
