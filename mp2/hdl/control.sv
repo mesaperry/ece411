@@ -111,7 +111,7 @@ enum int unsigned {
  *   and then call it at the beginning of your always_comb block.
 **/
 function void set_defaults();
-	mem_byte_enable = 4'b0000;
+	mem_byte_enable = 4'b1111;
 	mem_read = 1'b0;
 	mem_write = 1'b0;
 	ctrl_out.load_pc = 1'b0;
@@ -126,8 +126,8 @@ function void set_defaults();
 	ctrl_out.regfilemux_sel = regfilemux::alu_out;
 	ctrl_out.marmux_sel = marmux::pc_out;
 	ctrl_out.cmpmux_sel = cmpmux::rs2_out;
-	ctrl_out.aluop = rv32i_types::alu_add;
-	ctrl_out.cmpop = rv32i_types::beq;
+	ctrl_out.aluop = rv32i_types::alu_ops ' (dpath_in.funct3);
+	ctrl_out.cmpop = rv32i_types::branch_funct3_t ' (dpath_in.funct3);
 endfunction
 
 /**
