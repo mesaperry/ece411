@@ -174,7 +174,7 @@ begin : state_actions
 	/* Default output assignments */
 	set_defaults();
 	/* Actions for each state */
-	unique case (state)
+	case (state)
 		fetch1: begin
 			ctrl_out.load_mar = 1'b1;
 			ctrl_out.marmux_sel = marmux::pc_out;
@@ -345,38 +345,38 @@ begin : next_state_logic
     /* Next state information and conditions (if any)
      * for transitioning between states */
 	if (rst) begin
-		next_state <= fetch1;
+		next_state = fetch1;
 	end else begin
 		unique case (state)
 			fetch1:
-				next_state <= fetch2;
+				next_state = fetch2;
 			fetch2:
-				next_state <= mem_resp == 1'b0 ? fetch2 : fetch3;
+				next_state = mem_resp == 1'b0 ? fetch2 : fetch3;
 			fetch3:
-				next_state <= decode;
+				next_state = decode;
 			decode:
 				unique case(dpath_in.opcode)
-					rv32i_types::op_imm: next_state <= imm;
-					rv32i_types::op_lui: next_state <= lui;
-					rv32i_types::op_load: next_state <= calc_addr_ld;
-					rv32i_types::op_store: next_state <= calc_addr_st;
-					rv32i_types::op_auipc: next_state <= auipc;
-					rv32i_types::op_br: next_state <= br;
-					rv32i_types::op_reg: next_state <= reg_op;
-					rv32i_types::op_jal: next_state <= jal;
-					rv32i_types::op_jalr: next_state <= jalr;
-					default: next_state <= fetch1;
+					rv32i_types::op_imm: next_state = imm;
+					rv32i_types::op_lui: next_state = lui;
+					rv32i_types::op_load: next_state = calc_addr_ld;
+					rv32i_types::op_store: next_state = calc_addr_st;
+					rv32i_types::op_auipc: next_state = auipc;
+					rv32i_types::op_br: next_state = br;
+					rv32i_types::op_reg: next_state = reg_op;
+					rv32i_types::op_jal: next_state = jal;
+					rv32i_types::op_jalr: next_state = jalr;
+					default: next_state = fetch1;
 				endcase
 			calc_addr_ld:
-				next_state <= ld1;
+				next_state = ld1;
 			ld1:
-				next_state <= mem_resp == 1'b0 ? ld1 : ld2;
+				next_state = mem_resp == 1'b0 ? ld1 : ld2;
 			calc_addr_st:
-				next_state <= st1;
+				next_state = st1;
 			st1:
-				next_state <= mem_resp == 1'b0 ? st1 : st2;
+				next_state = mem_resp == 1'b0 ? st1 : st2;
 			default:
-				next_state <= fetch1;
+				next_state = fetch1;
 		endcase
 	end
 end

@@ -29,9 +29,17 @@ cmpmux::cmpmux_sel_t cmpmux_sel;
 /*****************************************************************************/
 
 /* Instantiate MP 1 top level blocks here */
-
 datapath_pack dpath_conn;
 control_pack ctrl_conn;
+
+assign load_pc = ctrl_conn.load_pc;
+assign load_regfile = ctrl_conn.load_regfile;
+assign pcmux_sel = ctrl_conn.pcmux_sel;
+assign alumux1_sel = ctrl_conn.alumux1_sel;
+assign alumux2_sel = ctrl_conn.alumux2_sel;
+assign regfilemux_sel = ctrl_conn.regfilemux_sel;
+assign marmux_sel = ctrl_conn.marmux_sel;
+assign cmpmux_sel = ctrl_conn.cmpmux_sel;
 
 // Keep control named `control` for RVFI Monitor
 control control(
