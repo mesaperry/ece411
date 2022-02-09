@@ -174,7 +174,7 @@ begin : state_actions
 	/* Default output assignments */
 	set_defaults();
 	/* Actions for each state */
-	case (state)
+	unique case (state)
 		fetch1: begin
 			ctrl_out.load_mar = 1'b1;
 			ctrl_out.marmux_sel = marmux::pc_out;
@@ -186,7 +186,7 @@ begin : state_actions
 		fetch3:
 			ctrl_out.load_ir = 1'b1;
 		imm:
-			case (dpath_in.funct3)
+			unique case (dpath_in.funct3)
 				rv32i_types::slt: begin
 					ctrl_out.load_regfile = 1'b1;
 					ctrl_out.load_pc = 1'b1;
@@ -236,7 +236,7 @@ begin : state_actions
 			ctrl_out.load_pc = 1'b1;
 			ctrl_out.aluop = rv32i_types::alu_add;
 			ctrl_out.marmux_sel = marmux::alu_out;
-			case (dpath_in.funct3)
+			unique case (dpath_in.funct3)
 				rv32i_types::lb: ctrl_out.regfilemux_sel = regfilemux::lb;
 				rv32i_types::lh: ctrl_out.regfilemux_sel = regfilemux::lh;
 				rv32i_types::lw: ctrl_out.regfilemux_sel = regfilemux::lw;
@@ -258,7 +258,7 @@ begin : state_actions
 			ctrl_out.alumux2_sel = alumux::s_imm;
 			ctrl_out.aluop = rv32i_types::alu_add;
 			ctrl_out.marmux_sel = marmux::alu_out;
-			case (dpath_in.funct3)
+			unique case (dpath_in.funct3)
 				rv32i_types::sb: mem_byte_enable = (4'b0001 << dpath_in.mem_address[1:0]);
 				rv32i_types::sh: mem_byte_enable = (4'b0011 << dpath_in.mem_address[1:0]);
 				default: mem_byte_enable = 4'b1111;
@@ -282,7 +282,7 @@ begin : state_actions
       end
 		br: begin
 			ctrl_out.load_pc = 1'b1;
-			ctrl_out.pcmux_sel = dpath_in.br_en ? alu_out : pc_plus4;
+			ctrl_out.pcmux_sel = dpath_in.br_en ? pcmux::alu_out : pcmux::pc_plus4;
 			ctrl_out.alumux1_sel = alumux::pc_out;
 			ctrl_out.alumux2_sel = alumux::b_imm;
 			ctrl_out.aluop = rv32i_types::alu_add;
@@ -347,7 +347,7 @@ begin : next_state_logic
 	if (rst) begin
 		next_state <= fetch1;
 	end else begin
-		case (state)
+		unique case (state)
 			fetch1:
 				next_state <= fetch2;
 			fetch2:
