@@ -1,6 +1,8 @@
 /* MODIFY. Your cache design. It contains the cache
 controller, cache datapath, and bus adapter. */
 
+import connections::*;
+
 module cache #(
     parameter s_offset = 5,
     parameter s_index  = 3,
@@ -31,16 +33,44 @@ module cache #(
     input   logic           pmem_resp
 );
 
-cache_control control
-(
+logic [255:0] bus_wdata;
+logic [255:0] bus_rdata;
+logic [31:0] mem_byte_enable256;
+
+logic [255:0] cacheline_out;
+assign pmem_wdata = cacheline_out;
+assign bus_rdata = cacheline_out;
+
+cache_control control(
+	.clk,
+	.rst,
+   .mem_read,
+   .mem_write,
+   .mem_resp,
+   .pmem_read,
+   .pmem_write,
+   .pmem_resp
 );
 
-cache_datapath datapath
-(
+cache_datapath datapath(
+	.clk,
+	.rst,
+	.mem_address,
+	.bus_wdata,
+	.bus_byte_enable(mem_byte_enable256),
+	.pmem_address,
+	.cacheline_in(pmem_rdata),
+	.cacheline_out
 );
 
-bus_adapter bus_adapter
-(
+bus_adapter bus_adapter(
+	.mem_wdata256(bus_wdata),
+	.mem_rdata256(bus_rdata),
+	.mem_wdata,
+	.mem_rdata,
+	.mem_byte_enable,
+	.mem_byte_enable256,
+	.address(mem_address)
 );
 
 endmodule : cache
