@@ -41,6 +41,9 @@ logic [255:0] cacheline_out;
 assign pmem_wdata = cacheline_out;
 assign bus_rdata = cacheline_out;
 
+connections::ctrl_out ctrl_out;
+connections::dpath_out dpath_out;
+
 cache_control control(
 	.clk,
 	.rst,
@@ -49,7 +52,9 @@ cache_control control(
    .mem_resp,
    .pmem_read,
    .pmem_write,
-   .pmem_resp
+   .pmem_resp,
+	.ctrl_out(ctrl_out),
+	.dpath_in(dpath_out)
 );
 
 cache_datapath datapath(
@@ -60,7 +65,9 @@ cache_datapath datapath(
 	.bus_byte_enable(mem_byte_enable256),
 	.pmem_address,
 	.cacheline_in(pmem_rdata),
-	.cacheline_out
+	.cacheline_out,
+	.dpath_out(dpath_out),
+	.ctrl_in(ctrl_out)
 );
 
 bus_adapter bus_adapter(
