@@ -6,15 +6,15 @@ typedef enum {
 } datain_sel_t;
 
 typedef enum {
-	no_write,
-	write_all,
-	cpu_write
+	nowrite,
+	writeall,
+	cpuwrite
 } write_en_sel_t;
 
-//typedef enum {
-//	data_way1,
-//	data_way2
-//} cacheline_sel_t;
+typedef enum {
+	data_way1,
+	data_way2
+} output_sel_t;
 
 typedef enum {
 	cpu,
@@ -22,29 +22,32 @@ typedef enum {
 } pmem_sel_t;
 
 typedef struct packed {
-	logic [1:0] tag_ld;
-	logic [1:0] dirty_ld;
-	logic [1:0] dirty_in;
-	logic lru_ld;
+	logic ld_tag_1;
+	logic ld_tag_2;
+	logic ld_dirty_1;
+	logic dirty_in_1;
+	logic ld_dirty_2;
+	logic dirty_in_2;
+	logic ld_lru;
 	logic lru_in;
-	logic [1:0] valid_ld;
-	logic [1:0] valid_in;
+	logic ld_valid;
+	logic write_sel_1;
+	logic write_sel_2;
 	logic output_sel;
-
-	datain_sel_t write_sel1;
-	datain_sel_t write_sel2;
-	write_en_sel_t write_en_sel1;
-	write_en_sel_t write_en_sel2;
-
-	pmem_sel_t pmem_address;
+	logic pmem_address;
+	logic [1:0] valid_in;
+	logic [1:0] write_en_sel1;
+	logic [1:0] write_en_sel2;
 } ctrl_out;
 
 typedef struct packed {
-	logic cache_hit;
-	logic way_hit;
-	logic lru_out;
-	logic [1:0] valid_out;
-	logic [1:0] dirty_out;
+	logic dirty1;
+	logic dirty2;
+	logic lru;
+	logic [23:0] tag1;
+	logic [23:0] tag2;
+	logic [1:0] valid;
+	logic [255:0] cacheline_out;
 } dpath_out;
 
 endpackage

@@ -1,7 +1,5 @@
-/* MODIFY. Your cache design. It contains the cache
-controller, cache datapath, and bus adapter. */
-
 import connections::*;
+import rv32i_types::*;
 
 module cache #(
     parameter s_offset = 5,
@@ -12,26 +10,29 @@ module cache #(
     parameter num_sets = 2**s_index
 )
 (
-    input clk,
-    input rst,
+	input clk,
+	input rst,
 
-    /* CPU memory signals */
-    input   logic [31:0]    mem_address,
-    output  logic [31:0]    mem_rdata,
-    input   logic [31:0]    mem_wdata,
-    input   logic           mem_read,
-    input   logic           mem_write,
-    input   logic [3:0]     mem_byte_enable,
-    output  logic           mem_resp,
+	// connection to CPU
+	output mem_resp,
+	input logic mem_read,
+	input logic mem_write,
+	input logic [3:0] mem_byte_enable,
+	input rv32i_word mem_address,
+	output rv32i_word mem_rdata,
+	input rv32i_word mem_wdata,
 
-    /* Physical memory signals */
-    output  logic [31:0]    pmem_address,
-    input   logic [255:0]   pmem_rdata,
-    output  logic [255:0]   pmem_wdata,
-    output  logic           pmem_read,
-    output  logic           pmem_write,
-    input   logic           pmem_resp
+	// connection to cacheline adaptor
+	output logic [255:0] pmem_wdata,
+	input logic [255:0] pmem_rdata,
+	output logic [31:0] pmem_address,
+	output pmem_read,
+	output pmem_write,
+	input logic pmem_resp
 );
+
+connections::dpath_out dpath_out;
+connections::ctrl_out ctrl_out;
 
 logic [255:0] bus_wdata;
 logic [255:0] bus_rdata;
@@ -41,42 +42,40 @@ logic [255:0] cacheline_out;
 assign pmem_wdata = cacheline_out;
 assign bus_rdata = cacheline_out;
 
-connections::ctrl_out ctrl_out;
-connections::dpath_out dpath_out;
-
-cache_control control(
-	.clk,
-	.rst,
-   .mem_read,
-   .mem_write,
-   .mem_resp,
-   .pmem_read,
-   .pmem_write,
-   .pmem_resp,
+cache_control control (
+	.clk(clk),
+	.rst(rst),
+	.cpu_write(mem_write),
+	.cpu_read(mem_read),
+	.mem_resp(pmem_resp),
+	.cache_resp(mem_resp),
+	.mem_read(pmem_read),
+	.mem_write(pmem_write),
 	.ctrl_out(ctrl_out),
-	.dpath_in(dpath_out)
+	.dpath_in(dpath_out),
+	.address(mem_address)
 );
 
-cache_datapath datapath(
-	.clk,
-	.rst,
-	.mem_address,
-	.bus_wdata,
-	.bus_byte_enable(mem_byte_enable256),
-	.pmem_address,
-	.cacheline_in(pmem_rdata),
-	.cacheline_out,
+cache_datapath datapath (
+	.clk(clk),
+	.rst(rst),
+	.ctrl_in(ctrl_out),
 	.dpath_out(dpath_out),
-	.ctrl_in(ctrl_out)
+	.address(mem_address),
+	.cacheline_in(pmem_rdata),
+	.bus_adaptor_line_in(bus_wdata),
+	.bus_adaptor_write_en(mem_byte_enable256),
+	.cacheline_out(cacheline_out),
+	.mem_addr(pmem_address)
 );
 
-bus_adapter bus_adapter(
+bus_adapter bus_adapter (
 	.mem_wdata256(bus_wdata),
 	.mem_rdata256(bus_rdata),
-	.mem_wdata,
-	.mem_rdata,
-	.mem_byte_enable,
-	.mem_byte_enable256,
+	.mem_wdata(mem_wdata),
+	.mem_rdata(mem_rdata),
+	.mem_byte_enable(mem_byte_enable),
+	.mem_byte_enable256(mem_byte_enable256),
 	.address(mem_address)
 );
 
